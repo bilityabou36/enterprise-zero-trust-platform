@@ -48,4 +48,4 @@ This program is technically aligned with the following professional certificatio
 ---
 
 ## 👤 Author
-**Abou Bility** *Cybersecurity Professional | Aspiring Zero Trust Architect 
+**Abou Bility** Cybersecurity Professional | Aspiring Zero Trust Architect 
