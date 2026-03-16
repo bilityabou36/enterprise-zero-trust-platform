@@ -1,45 +1,49 @@
-# Lab 01 - Federated Identity Foundation
+# Lab 01 – Federated Identity Foundation
 
 ## Objective
-Integrate Microsoft Entra ID with AWS IAM Identity Center using SAML and SCIM so that enterprise identity becomes the source of truth for AWS access.
+Implement enterprise identity federation between Microsoft Entra ID and AWS IAM Identity Center using SAML and SCIM provisioning.
 
-## Why This Matters
-Manual IAM users create security debt, weak lifecycle control, and inconsistent offboarding.
+## Architecture
+User authentication and authorization is managed through Microsoft Entra ID while AWS IAM Identity Center provides access to AWS accounts via permission sets.
 
-This lab establishes identity as the control plane for the Enterprise Zero Trust Platform.
+## Technologies
+- Microsoft Entra ID
+- AWS IAM Identity Center
+- AWS Organizations
+- SAML Federation
+- SCIM Provisioning
 
-## Architecture Summary
-Microsoft Entra ID federates authentication into AWS IAM Identity Center.
+## Architecture Diagram
+../../architecture/identity-federation.drawio
 
-AWS IAM Identity Center provides permission sets and account access based on centrally managed enterprise identities.
+## Key Components
+- SAML authentication between Entra ID and AWS
+- SCIM user provisioning
+- Permission sets for AWS access
+- AWS Organizations multi-account access
 
-## Threat Addressed
-Credential theft and orphaned IAM users.
+## Evidence
 
-## STRIDE Category
-Spoofing
+### Identity Center Enabled
+![identity-center-enabled](evidence/screenshots/identity-center-enabled.png)
 
-## Decision Reference
-See `decisions/ADR-001-federated-identity.md`
+### Azure Enterprise Application
+![enterprise-app](evidence/screenshots/enterprise-app.png)
 
-## Threat Model Reference
-See `threat-models/identity-federation-threat-model.md`
+### SAML Configuration
+![saml-config](evidence/screenshots/saml-basic-config.png)
 
-## Expected Deliverables
-- SAML federation configured
-- SCIM provisioning configured
-- Permission set created
-- Successful user login through AWS IAM Identity Center
-- Evidence screenshots captured
+### SCIM Provisioned User
+![scim-user](evidence/screenshots/scim-user-created-in-aws.png)
 
-## Evidence to Capture
-- Entra enterprise application configuration
-- AWS IAM Identity Center external identity source
-- SCIM provisioning status
-- Permission set assignment
-- Successful SSO login screen
+### Permission Set
+![permission-set](evidence/screenshots/permission-set-admin-access.png)
 
-## Success Criteria
-- No manual IAM user required for workforce access
-- User can authenticate through Entra ID
-- Access to AWS account is controlled through IAM Identity Center
+### AWS Portal Login
+![aws-login](evidence/screenshots/aws-sso-portal-login.png)
+
+### Federated Console Access
+![console](evidence/screenshots/aws-console-federated-login.png)
+
+## Result
+Successful federated authentication from Microsoft Entra ID into AWS IAM Identity Center with automatic user provisioning via SCIM and permission-set based access to AWS Organizations accounts.
