@@ -1,49 +1,63 @@
-# Lab 01 – Federated Identity Foundation
+# Lab 01: Federated Identity Foundation (SAML 2.0 + SCIM)
 
-## Objective
-Implement enterprise identity federation between Microsoft Entra ID and AWS IAM Identity Center using SAML and SCIM provisioning.
+## 🎯 Executive Summary
+In this lab, I established a centralized Identity Control Plane by federating **Microsoft Entra ID** with **AWS IAM Identity Center**. This architecture eliminates the need for local IAM users, reducing the attack surface and ensuring a Single Source of Truth for identity across a multi-account AWS Organization.
 
-## Architecture
-User authentication and authorization is managed through Microsoft Entra ID while AWS IAM Identity Center provides access to AWS accounts via permission sets.
+---
 
-## Technologies
-- Microsoft Entra ID
-- AWS IAM Identity Center
-- AWS Organizations
-- SAML Federation
-- SCIM Provisioning
+## 🏗️ Architecture Overview
+The solution utilizes **SAML 2.0** for authentication (the handshake) and **SCIM 2.0** for automatic provisioning (the identity sync).
 
-## Architecture Diagram
-../../architecture/identity-federation.drawio
+- **Identity Provider (IdP):** Microsoft Entra ID
+- **Service Provider (SP):** AWS IAM Identity Center
+- **Protocol:** SAML 2.0
+- **Provisioning:** SCIM (Automatic)
 
-## Key Components
-- SAML authentication between Entra ID and AWS
-- SCIM user provisioning
-- Permission sets for AWS access
-- AWS Organizations multi-account access
 
-## Evidence
+---
 
-### Identity Center Enabled
-![identity-center-enabled](evidence/screenshots/identity-center-enabled.png)
+## 🛡️ Threat Model Mitigation (STRIDE)
+| Threat Category | Threat Description | Mitigation Strategy |
+| :--- | :--- | :--- |
+| **Spoofing** | Attacker uses local IAM credentials | **Resolution:** Disabled local IAM users; enforced Federated SSO. |
+| **Information Disclosure** | Orphaned accounts remain active after employee departure | **Resolution:** SCIM provisioning ensures real-time de-provisioning. |
+| **Elevation of Privilege** | Users assigned excessive local permissions | **Resolution:** Centralized Permission Sets mapped to Entra ID Groups. |
 
-### Azure Enterprise Application
-![enterprise-app](evidence/screenshots/enterprise-app.png)
+---
 
-### SAML Configuration
-![saml-config](evidence/screenshots/saml-basic-config.png)
+## 🛠️ Implementation Details
 
-### SCIM Provisioned User
-![scim-user](evidence/screenshots/scim-user-created-in-aws.png)
+### 1. The Handshake (SAML)
+- Exchanged Metadata XML between Entra ID and AWS.
+- Configured **Unique User Identifier (NameID)** to map to `user.mail` to ensure attribute alignment.
+- **Evidence:** `evidence/azure-saml-claims.png`, `evidence/federation-established-entra-to-aws.png`
 
-### Permission Set
-![permission-set](evidence/screenshots/permission-set-admin-access.png)
+### 2. The Identity Engine (SCIM)
+- Enabled Automatic Provisioning in AWS.
+- Configured the SCIM Endpoint and Secret Token in Entra ID.
+- **Evidence:** `evidence/scim-provisioning-enabled.png`, `evidence/scim-user-created-in-aws.png`
 
-### AWS Portal Login
-![aws-login](evidence/screenshots/aws-sso-portal-login.png)
+### 3. Authorization (Permission Sets)
+- Created an **AdministratorAccess** Permission Set.
+- Provisioned the Entra ID user to four distinct AWS accounts (PROD, Security, General).
+- **Evidence:** `evidence/permission-set-admin-access.png`
 
-### Federated Console Access
-![console](evidence/screenshots/aws-console-federated-login.png)
+---
 
-## Result
-Successful federated authentication from Microsoft Entra ID into AWS IAM Identity Center with automatic user provisioning via SCIM and permission-set based access to AWS Organizations accounts.
+## 🚧 Conflict & Resolution (The "Architect's Challenge")
+**Issue:** During the initial testing, I encountered an `HTTP 400 Bad Request` at the AWS sign-in endpoint.
+**Root Cause:** A mismatch between the **NameID claim** sent by Entra ID (`userprincipalname`) and the identity stored in AWS (`email`).
+**Resolution:** Updated the Entra ID claim mapping to use `user.mail` as the primary identifier and cleared the browser session state.
+
+---
+
+## ✅ Final Validation
+Successfully logged into the **AWS Access Portal** using Entra ID credentials, with a unified view of all 4 AWS Organization accounts.
+
+**Final Evidence:** `evidence/aws-console-federated-login.png`
+
+---
+
+## 📖 Architecture Decision Records (ADRs)
+- [ADR-001: Centralized Identity via Entra ID](../../decisions/001-identity-federation.md).
+
