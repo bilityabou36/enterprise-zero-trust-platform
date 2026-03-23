@@ -20,11 +20,6 @@ This lab demonstrates a core DevSecOps principle:
 
 ---
 
-## 🏗️ Architecture
-
-### Terraform Dependency Graph
-
-![Terraform Graph](./architecture/lab05-terraform-architecture-graph.png)
 
 ---
 
